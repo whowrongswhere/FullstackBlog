@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <title>博客首页</title>
+    <!-- Bootstrap--CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 自定义样式 -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<!-- 顶部栏 -->
+<% include header.ejs %>
+<!-- 顶部栏--end -->
+
+<div class="jumbotron">
+    <% if(!login){ %>
+    <!-- 没有登陆的时候，显示登陆提示-->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h1>欢迎！</h1>
+                <p>班级说说是我们交流的园地，欢迎注册！</p>
+                <p><a class="btn btn-primary btn-lg" href="/regist" role="button">注册</a></p>
+            </div>
+            <div class="col-lg-6">
+                <p>已有账号登陆</p>
+                <form>
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username" placeholder="用户名，可以是中文，不能和别人重复">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" placeholder="密码，至少6位">
+                    </div>
+                    <button type="button" id="loginBtn" class="btn btn-success">登陆</button>
+                </form>
+                <div class="alert alert-danger" role="alert" id="errorTip" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    <% }else{ %>
+    <!-- 登陆之后，显示发言框-->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-1">
+                <a href="/setAvatar">
+                    <img class="avatar" src="/avatar/<%= avatar %>" alt=""/>
+                </a>
+            </div>
+            <div class="col-lg-6 col-lg-offset-1">
+                <p><%= username %></p>
+                <textarea name="content" id="content" cols="80" rows="4"></textarea>
+                <button type="button" id="publishBtn" class="btn btn-success">发表说说</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+</div>
+
+<div class="container">
+    <!-- 分页条-->
+    <nav>
+        <ul class="pagination"></ul>
+    </nav>
+    <!-- 分页条-->
+    <!-- 3条记录 -->
+    <div class="row alltalk_mk" id="allTalk"></div>
+    <!-- 3条记录 -->
+</div>
+
+<!-- 底部栏 -->
+<% include footer.ejs %>
+<!-- 底部栏--end -->
+
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/underscore-noflect.js"></script>
+<script type="text/javascript">
+    //分页条的Ajax
+    $.get("/getPublicTalkAmount", function (result) {
+        var amount = parseInt(result);
+        //总说说页数
+        pageAmount = Math.ceil(amount / 3);
+        for (var i = 0; i < pageAmount; i++) {
+            $(".pagination").append("<li><a href='javascript:void(0);'>" + i + "</a></li>");
+        }
+        $(".pagination li:first").addClass("active");
+        //监听
+        $(".pagination li").click(function () {
+            var page = $(this).index();
+            getPage(page);
+            $(this).addClass("active").siblings().removeClass("active");
+        });
+    })
+</script>
+
+//说说模板
+<script type="text/template" id="talkTemplate">
+    <div class="col-md-4 grid">
+        <h2><img width="40" class="avatar" src="/avatar/{{=avatar}}" alt=""/>{{=username}}说：</h2>
+        <p>{{=content}}</p>
+        <p>{{=datetime}}</p>
+        <p><a class="btn btn-default" href="#" role="button">查看详细</a></p>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var $allTalk = $("#allTalk");
+    //得到模板函数
+    var compiled = _.template($("#talkTemplate").html());
+    getPage(0);
+    //请求分页的说说信息
+    function getPage(page) {
+        //将现在的页面内容清除
+        $("#allTalk").html("");
+        $.ajax({
+            "url": "/getAllTalk?page=" + page,
+            "type": "get",
+            "success": function (result) {
+                //result是一个数组
+                //console.log(Array.isArray(result));
+                iterator(0);
+                //迭代器
+                function iterator(i) {
+                    if (i == result.length) {
+                        //在这里书写请求完毕之后做的事情
+                        return;  //不用继续迭代了
+                    }
+                    $.get("/getUserInfo?username=" + result[i].username, function (result2) {
+                            //修改字典，给字典增加一项
+                            result[i].avatar = result2.avatar;
+                            //组装模板
+                            var htmlstring = compiled(result[i]);
+                            //添加DOM
+                            $("#allTalk").append($(htmlstring));
+                            iterator(i + 1);
+                        }
+                    );
+                }
+            }
+        });
+    }
+
+    //文本框得到焦点，错误提示小时
+    $("input").focus(function () {
+        $("#errorTip").fadeOut();
+    });
+
+    //登陆按钮，登陆
+    $("#loginBtn").click(function () {
+        //注册按钮的事件，用ajax提交表单
+        $.post("/dologin", {
+            "username": $("#username").val(),
+            "password": $("#password").val()
+        }, function (result) {
+            if (result == "1") {
+                //注册成功
+                window.location = "/";
+            } else if (result == "-1") {
+                $("#errorTip").fadeIn();
+                $("#errorTip").html("用户名不存在");
+            } else if (result == "-2") {
+                $("#errorTip").fadeIn();
+                $("#errorTip").html("密码错误！");
+            }
+        });
+    });
+
+    //点击发布按钮之后做的事情
+    $("#publishBtn").click(function () {
+        //注册按钮的事件，用ajax提交表单
+        $.post("/doPost", {
+            "content": $("#content").val()
+        }, function (result) {
+            if (result == "1") {
+                //注册成功
+                alert("发布成功");
+                window.location = "/";
+            } else {
+                alert("请联系管理员，发布失败");
+            }
+        });
+    });
+</script>
+</body>
+</html>

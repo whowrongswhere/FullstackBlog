@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <title>更改头像</title>
+    <!-- Bootstrap--CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 自定义样式 -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- 顶部栏 -->
+<% include header.ejs %>
+<!-- 顶部栏--end -->
+
+<div class="container">
+    <div class="row col-lg-6">
+        <h1>上传头像</h1>
+        <form action="/doSetAvatar" method="post"  enctype="multipart/form-data" >
+            <div class="form-group">
+                <label for="username">请改头像</label>
+                <input type="file" class="form-control" id="uploadAvator" name="uploadAvator">
+            </div>
+            <button type="submit" id="uploadAvatorBtn" class="btn btn-default" >上传</button>
+        </form>
+    </div>
+</div>
+
+<!-- 底部栏 -->
+<% include footer.ejs %>
+<!-- 底部栏--end -->
+
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+</body>
+</html>

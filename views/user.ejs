@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <title><%=user%>的说说</title>
+    <!-- Bootstrap--CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 自定义样式 -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<!-- 顶部栏 -->
+<% include header.ejs %>
+<!-- 顶部栏--end -->
+
+<div class="container container_padding_top">
+    <img  class="avatar" src="/avatar/<%=personalAvatar%>" alt=""/>
+    <h1><%=user%>的说说</h1>
+    <div class="row col-lg-6">
+        <%for(var i = 0 ; i < personalTalk.length ; i++){%>
+        <div class="one">
+            <p> <%=personalTalk[i].content%></p>
+            <p> <%=personalTalk[i].datetime%></p>
+        </div>
+        <%}%>
+    </div>
+</div>
+
+<!-- 底部栏 -->
+<% include footer.ejs %>
+<!-- 底部栏--end -->
+
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+</body>
+</html>

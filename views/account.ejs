@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <title><%=user%>的个人中心</title>
+    <!-- Bootstrap--CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 自定义样式 -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<!-- 顶部栏 -->
+<% include header.ejs %>
+<!-- 顶部栏--end -->
+
+<div class="container container_padding_top">
+    <img  class="avatar" src="/avatar/<%=personalAvatar%>" alt=""/>
+    <h1><%=user%>的基本信息</h1>
+    <form role="form">
+        <div class="form-group">
+            <label for="exampleInputPassword1">年龄：</label>
+            <input type="text" class="form-control" id="age"  placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">性别：</label>
+            男：<input type="radio" checked="checked" name="sex" value="男">&nbsp;&nbsp;&nbsp;
+            女:<input type="radio" name="sex" value="女">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">爱好：</label>
+            跑步：<input type="checkbox" name="hover" value="跑步">&nbsp;&nbsp;&nbsp;
+            打牌：<input type="checkbox" name="hover" value="打牌">&nbsp;&nbsp;&nbsp;
+            睡觉：<input type="checkbox" name="hover" value="睡觉">&nbsp;&nbsp;&nbsp;
+            抽烟：<input type="checkbox" name="hover" value="抽烟">
+        </div>
+        <button type="button" id="modifyBtn" class="btn btn-default">确认</button>
+    </form>
+    <div class="alert alert-danger errorTip" role="alert" id="errorTip"></div>
+
+</div>
+
+<!-- 底部栏 -->
+<% include footer.ejs %>
+<!-- 底部栏--end -->
+
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $("input").focus(function(){
+        $("#errorTip").fadeOut();
+    });
+    //修改密码按钮事件，用ajax提交表单
+    $("#modifyBtn").click(function(){
+        var chk_value =[];  //初始化爱好数组
+        $('input[name="hover"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        $.ajax({
+            type: "post",
+            url: "/doModifyAccont",
+            traditional: true,
+            data: {
+                "age" : $("#age").val(),
+                "sex" : $("input[name='sex']:checked").val(),
+                "hover" : chk_value
+            },
+            success:function(result){
+                if(result == "1"){
+                    alert("修改成功！将自动跳转到首页");
+                    window.location = "/";
+                }else if(result == "-1"){
+                    $("#errorTip").fadeIn();
+                    $("#errorTip").html("年龄为空");
+                }else if(result == "-2"){
+                    $("#errorTip").fadeIn();
+                    $("#errorTip").html("性别未选中");
+                }else if(result == "-3"){
+                    $("#errorTip").fadeIn();
+                    $("#errorTip").html("爱好未选中");
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

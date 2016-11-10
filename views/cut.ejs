@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <title>头像剪裁</title>
+    <link rel="stylesheet" type="text/css" href="/css/jquery.Jcrop.css">
+</head>
+<body>
+<img src="/avatar/<%=avatar%>" id="target" alt=""/>
+<div id="preview-pane">
+    <div class="preview-container">
+        <img src="/avatar/<%=avatar%>" class="jcrop-preview" alt="Preview"/>
+    </div>
+</div>
+
+<input type="button" value="剪裁！！" id="avatorCutBtn">
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="/js/xiaoguo.js"></script>
+
+<script type="text/javascript">
+    $("#avatorCutBtn").click(function () {
+        var w = parseInt($(".jcrop-holder>div:first").css("width"));
+        var h = parseInt($(".jcrop-holder>div:first").css("height"));
+        var x = parseInt($(".jcrop-holder>div:first").css("left"));
+        var y = parseInt($(".jcrop-holder>div:first").css("top"));
+
+        $.get("/doCut",{
+            "w" : w,
+            "h" : h,
+            "x" : x,
+            "y" : y
+        },function(result){
+            if(result == "1"){
+                alert("更换头像成功！");
+                window.location = "/";
+            }
+        });
+    });
+</script>
+</body>
+</html>
+

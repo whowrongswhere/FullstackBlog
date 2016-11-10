@@ -1,0 +1,33 @@
+/*自定义样式*/
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+.footer {
+  position: absolute;
+  left:500px;
+  bottom: 10px;
+}
+/*index.ejs*/
+.grid {
+  height: 200px;
+}
+
+.avatar {
+  border-radius: 50%;
+}
+
+.alltalk_mk {
+  height: 500px;
+}
+.container_padding_top {
+  padding-top: 60px;
+}
+/*登录*/
+.errorTip {
+  display: none;
+}
+/*班级说说*/
+.one{
+  border-bottom: 1px solid #ccc;
+}

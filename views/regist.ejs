@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <title>注册</title>
+    <!-- Bootstrap--CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 自定义样式 -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- 顶部栏 -->
+<% include header.ejs %>
+<!-- 顶部栏--end -->
+
+<div class="container">
+    <div class="row col-lg-6">
+        <h1>欢迎注册</h1>
+        <form>
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" class="form-control" id="username" placeholder="用户名，可以是中文，不能和别人重复">
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" class="form-control" id="password" placeholder="密码，至少6位">
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox"> 我遵守注册规定
+                </label>
+            </div>
+            <button type="button" id="registBtn" class="btn btn-default" >注册</button>
+        </form>
+        <div class="alert alert-danger errorTip" role="alert" id="errorTip">
+            用户名被占用，请更换
+        </div>
+    </div>
+</div>
+
+<!-- 底部栏 -->
+<% include footer.ejs %>
+<!-- 底部栏--end -->
+
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+    $("input").focus(function(){
+        $("#errorTip").fadeOut();
+    });
+   $("#registBtn").click(function(){
+       //注册按钮的事件，用ajax提交表单
+       $.post("/doRegist",{
+           "username" : $("#username").val(),
+           "password" : $("#password").val()
+       },function(result){
+           if(result == "1"){
+               //注册成功
+               alert("注册成功！将自动跳转到首页");
+               window.location = "/";
+           }else if(result == "-1"){
+               //用户名被占用
+               $("#errorTip").fadeIn();
+               $("#errorTip").html("用户名被占用啊！");
+           }else if(result == "-3"){
+               //服务器错误
+               $("#errorTip").fadeIn();
+               $("#errorTip").html("服务器错误！");
+               window.location = "/";
+           }
+       });
+   });
+</script>
+</body>
+</html>
